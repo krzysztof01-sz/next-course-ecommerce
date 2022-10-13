@@ -58,6 +58,8 @@ const ProductDetailsPage = ({
     return <div>Product not found 😥</div>;
   }
 
+  console.log("test branch to test lint workflow");
+
   return (
     <div>
       <Header />
