@@ -1,7 +1,6 @@
 import { InferGetStaticPropsType } from "next";
 import Link from "next/link";
-import { Footer } from "../../components/Footer";
-import { Header } from "../../components/Header";
+import { Main } from "../../components/Main";
 import { FullProduct } from "../../components/Product";
 
 export interface Product {
@@ -32,21 +31,21 @@ const ProductsPage = ({
   product,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
-    <div>
-      <Header />
-      <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5 bg-gray-900'>
+    <Main>
+      <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
         {product.map(({ description, image, rating, title, id }) => (
-          <Link passHref key={id} href={`/products/${id}`}>
-            <a>
-              <FullProduct
-                data={{ description, image, rating: rating.rate, title }}
-              />
-            </a>
-          </Link>
+          <li key={id}>
+            <Link passHref href={`/products/${id}`}>
+              <a>
+                <FullProduct
+                  data={{ description, image, rating: rating.rate, title }}
+                />
+              </a>
+            </Link>
+          </li>
         ))}
       </ul>
-      <Footer />
-    </div>
+    </Main>
   );
 };
 

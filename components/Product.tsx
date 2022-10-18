@@ -34,10 +34,10 @@ export const ProductDetails = ({ image, title }: ProductBase) => {
 
 export const FullProduct = ({ data }: FullProductProps) => {
   return (
-    <div className='rounded-2xl bg-gradient-to-r from-pink-500 via-red-500 to-white p-1 shadow-xl'>
+    <div className='rounded-2xl bg-gradient-to-r from-pink-500 via-red-500 to-white p-1 shadow-xl h-full'>
       <div className='block relative h-full rounded-xl bg-gray-800 p-6 sm:p-8'>
         <span className='absolute right-4 top-4 z-10 inline-flex items-center rounded-full bg-white px-3 py-1 text-xs font-semibold text-black'>
-          {data.rating}
+          Rating: {data.rating}
         </span>
         <div className='mt-5'>
           <div className='p-3 bg-white'>

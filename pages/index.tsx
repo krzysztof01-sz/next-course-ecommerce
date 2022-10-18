@@ -1,5 +1,3 @@
-import { Footer } from "../components/Footer";
-import { Header } from "../components/Header";
 import { Main } from "../components/Main";
 import { FullProduct } from "../components/Product";
 
@@ -30,15 +28,13 @@ const DATA = [
 
 const Home = () => {
   return (
-    <div className='flex flex-col min-h-screen'>
-      <Header />
-      <Main>
+    <Main>
+      <ul className='grid md:grid-cols-2 gap-6'>
         {DATA.map((product) => {
           return <FullProduct key={product.title} data={product} />;
         })}
-      </Main>
-      <Footer />
-    </div>
+      </ul>
+    </Main>
   );
 };
 
