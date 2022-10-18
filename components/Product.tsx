@@ -1,10 +1,12 @@
 import Image from "next/image";
+import ReactMarkdown from "react-markdown";
 
 interface ProductDetailsProps {
   image: string;
   title: string;
   description: string;
   rating: number;
+  longDescription: string;
 }
 
 interface FullProductProps {
@@ -13,18 +15,21 @@ interface FullProductProps {
 
 type ProductBase = Pick<ProductDetailsProps, "title" | "image">;
 
-export const ProductDetails = ({ image, title }: ProductBase) => {
+export const ProductLight = ({ image, title }: ProductBase) => {
   return (
     <div className='rounded-2xl bg-gradient-to-r from-pink-500 via-red-500 to-white p-1 shadow-xl'>
       <div className='block relative h-full rounded-xl bg-gray-800 p-6 sm:p-8'>
         <div className='mt-5'>
-          <Image
-            width={16}
-            height={19}
-            layout='responsive'
-            alt={title}
-            src={image}
-          />
+          <div className='p-3 bg-white'>
+            <Image
+              width={16}
+              height={9}
+              layout='responsive'
+              objectFit='contain'
+              alt={title}
+              src={image}
+            />
+          </div>
           <h5 className='text-xl mt-5 font-bold text-white'>{title}</h5>
         </div>
       </div>
@@ -50,8 +55,15 @@ export const FullProduct = ({ data }: FullProductProps) => {
               objectFit='contain'
             />
           </div>
-          <h5 className='text-xl mt-5 font-bold text-white'>{data.title}</h5>
-          <p className='mt-2 text-sm text-gray-300'>{data.description}</p>
+          <h5 className='text-2xl mt-5 font-bold text-white'>{data.title}</h5>
+          <p className='mt-2 text-sm text-gray-400'>{data.description}</p>
+          <div className='mt-6'>
+            <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-blue-500'>
+              <ReactMarkdown className='text-sm text-gray-400'>
+                {data.longDescription}
+              </ReactMarkdown>
+            </article>
+          </div>
         </div>
       </div>
     </div>
