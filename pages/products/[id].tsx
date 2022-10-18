@@ -1,9 +1,10 @@
 import { InferGetStaticPropsType } from "next";
+import Head from "next/head";
 import Link from "next/link";
 import { Product } from ".";
-import { Footer } from "../../components/Footer";
-import { Header } from "../../components/Header";
+import { Main } from "../../components/Main";
 import { FullProduct } from "../../components/Product";
+import { NextSeo } from "next-seo";
 
 export type InferGetStaticPaths<T> = T extends () => Promise<{
   paths: Array<{ params: infer R }>;
@@ -12,7 +13,9 @@ export type InferGetStaticPaths<T> = T extends () => Promise<{
   : never;
 
 export const getStaticPaths = async () => {
-  const response: Product[] = await fetch("https://fakestoreapi.com/products")
+  const response: Product[] = await fetch(
+    "https://naszsklep-api.vercel.app/api/products"
+  )
     .then((res) => res.json())
     .then((data) => data);
 
@@ -39,7 +42,7 @@ export const getStaticProps = async ({
   }
 
   const response: Product | null = await fetch(
-    `https://fakestoreapi.com/products/${params.id}`
+    `https://naszsklep-api.vercel.app/api/products/${params.id}`
   )
     .then((res) => res.json())
     .then((data) => data);
@@ -55,31 +58,46 @@ const ProductDetailsPage = ({
   product,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   if (!product) {
-    return <div>Product not found 😥</div>;
+    return <p>Product not found 😥</p>;
   }
 
   return (
-    <div>
-      <Header />
-      <div className='flex w-full bg-gray-900'>
-        <div className='w-1/3 mx-auto py-7'>
-          <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-5'>
-            <Link href='/products'>
-              <a>Go back</a>
-            </Link>
-          </button>
-          <FullProduct
-            data={{
-              description: product.description,
-              image: product.image,
-              rating: product.rating.rate,
-              title: product.title,
-            }}
-          />
-        </div>
+    <Main>
+      <NextSeo
+        title={product.title}
+        description={product.description}
+        canonical={`https://next-course-ecommerce.vercel.app/products/${product.id}`}
+        openGraph={{
+          url: `https://next-course-ecommerce.vercel.app/products/${product.id}`,
+          title: product.title,
+          description: product.description,
+          images: [
+            {
+              url: product.image,
+              alt: product.title,
+              type: "image/jpeg",
+            },
+          ],
+          site_name: "My e-commerce next app",
+        }}
+      />
+      <div className='w-full md:w-2/3 lg:w-2/5 mx-auto h-max'>
+        <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-5'>
+          <Link href='/products'>
+            <a>Go back</a>
+          </Link>
+        </button>
+        <FullProduct
+          data={{
+            description: product.description,
+            image: product.image,
+            rating: product.rating.rate,
+            title: product.title,
+            longDescription: product.longDescription,
+          }}
+        />
       </div>
-      <Footer />
-    </div>
+    </Main>
   );
 };
 

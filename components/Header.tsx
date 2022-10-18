@@ -6,7 +6,7 @@ export const Header = () => {
 
   return (
     <header className='mx-auto w-full'>
-      <nav className='text-white bg-gray-800 px-2 py-4'>
+      <nav className='text-white bg-gray-800 px-6 py-4'>
         <p>Navigation</p>
 
         <ul className='flex'>

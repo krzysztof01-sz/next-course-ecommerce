@@ -1,8 +1,7 @@
 import { InferGetStaticPropsType } from "next";
 import Link from "next/link";
-import { Footer } from "../../components/Footer";
-import { Header } from "../../components/Header";
-import { FullProduct } from "../../components/Product";
+import { Main } from "../../components/Main";
+import { ProductLight } from "../../components/Product";
 
 export interface Product {
   id: number;
@@ -11,6 +10,7 @@ export interface Product {
   description: string;
   category: string;
   image: string;
+  longDescription?: string;
   rating: {
     rate: number;
     count: number;
@@ -18,7 +18,9 @@ export interface Product {
 }
 
 export const getStaticProps = async () => {
-  const response: Product[] = await fetch("https://fakestoreapi.com/products")
+  const response: Product[] = await fetch(
+    "https://naszsklep-api.vercel.app/api/products"
+  )
     .then((res) => res.json())
     .then((data) => data);
   return {
@@ -32,21 +34,19 @@ const ProductsPage = ({
   product,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
   return (
-    <div>
-      <Header />
-      <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5 bg-gray-900'>
-        {product.map(({ description, image, rating, title, id }) => (
-          <Link passHref key={id} href={`/products/${id}`}>
-            <a>
-              <FullProduct
-                data={{ description, image, rating: rating.rate, title }}
-              />
-            </a>
-          </Link>
+    <Main>
+      <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
+        {product.map(({ image, title, id }) => (
+          <li key={id}>
+            <Link passHref href={`/products/${id}`}>
+              <a>
+                <ProductLight image={image} title={title} />
+              </a>
+            </Link>
+          </li>
         ))}
       </ul>
-      <Footer />
-    </div>
+    </Main>
   );
 };
 
