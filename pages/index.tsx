@@ -31,7 +31,12 @@ const Home = () => {
     <Main>
       <ul className='grid md:grid-cols-2 gap-6'>
         {DATA.map((product) => {
-          return <FullProduct key={product.title} data={product} />;
+          return (
+            <FullProduct
+              key={product.title}
+              data={{ ...product, longDescription: "" }}
+            />
+          );
         })}
       </ul>
     </Main>

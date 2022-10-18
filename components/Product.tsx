@@ -6,7 +6,7 @@ interface ProductDetailsProps {
   title: string;
   description: string;
   rating: number;
-  longDescription: string;
+  longDescription?: string;
 }
 
 interface FullProductProps {
@@ -57,13 +57,15 @@ export const FullProduct = ({ data }: FullProductProps) => {
           </div>
           <h5 className='text-2xl mt-5 font-bold text-white'>{data.title}</h5>
           <p className='mt-2 text-sm text-gray-400'>{data.description}</p>
-          <div className='mt-6'>
-            <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-blue-500'>
-              <ReactMarkdown className='text-sm text-gray-400'>
-                {data.longDescription}
-              </ReactMarkdown>
-            </article>
-          </div>
+          {data.longDescription && (
+            <div className='mt-6'>
+              <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-blue-500'>
+                <ReactMarkdown className='text-sm text-gray-400'>
+                  {data.longDescription}
+                </ReactMarkdown>
+              </article>
+            </div>
+          )}
         </div>
       </div>
     </div>
