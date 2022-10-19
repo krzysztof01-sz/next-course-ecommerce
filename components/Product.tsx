@@ -1,12 +1,13 @@
 import Image from "next/image";
-import ReactMarkdown from "react-markdown";
+import { MarkdownResult } from "../types";
+import { CustomMarkdown } from "./CustomMarkdown";
 
 interface ProductDetailsProps {
   image: string;
   title: string;
   description: string;
   rating: number;
-  longDescription?: string;
+  longDescription?: MarkdownResult;
 }
 
 interface FullProductProps {
@@ -60,9 +61,7 @@ export const FullProduct = ({ data }: FullProductProps) => {
           {data.longDescription && (
             <div className='mt-6'>
               <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-blue-500'>
-                <ReactMarkdown className='text-sm text-gray-400'>
-                  {data.longDescription}
-                </ReactMarkdown>
+                <CustomMarkdown>{data.longDescription}</CustomMarkdown>
               </article>
             </div>
           )}

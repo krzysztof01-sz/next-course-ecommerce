@@ -34,7 +34,7 @@ const Home = () => {
           return (
             <FullProduct
               key={product.title}
-              data={{ ...product, longDescription: "" }}
+              data={{ ...product, longDescription: undefined }}
             />
           );
         })}

@@ -1,10 +1,10 @@
 import { InferGetStaticPropsType } from "next";
-import Head from "next/head";
 import Link from "next/link";
 import { Product } from ".";
 import { Main } from "../../components/Main";
 import { FullProduct } from "../../components/Product";
 import { NextSeo } from "next-seo";
+import { serialize } from "next-mdx-remote/serialize";
 
 export type InferGetStaticPaths<T> = T extends () => Promise<{
   paths: Array<{ params: infer R }>;
@@ -47,9 +47,21 @@ export const getStaticProps = async ({
     .then((res) => res.json())
     .then((data) => data);
 
+  if (!response) {
+    return {
+      props: {},
+      notFound: true,
+    };
+  }
+
   return {
     props: {
-      product: response,
+      product: {
+        ...response,
+        longDescription: response.longDescription
+          ? await serialize(response.longDescription)
+          : undefined,
+      },
     },
   };
 };
