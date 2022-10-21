@@ -1,10 +1,10 @@
 import { InferGetStaticPropsType } from "next";
-import Link from "next/link";
 import { Product } from ".";
 import { Main } from "../../components/Main";
 import { FullProduct } from "../../components/Product";
 import { NextSeo } from "next-seo";
 import { serialize } from "next-mdx-remote/serialize";
+import { useRouter } from "next/router";
 
 export type InferGetStaticPaths<T> = T extends () => Promise<{
   paths: Array<{ params: infer R }>;
@@ -14,7 +14,7 @@ export type InferGetStaticPaths<T> = T extends () => Promise<{
 
 export const getStaticPaths = async () => {
   const response: Product[] = await fetch(
-    "https://naszsklep-api.vercel.app/api/products"
+    "https://naszsklep-api.vercel.app/api/products?take=250&offset=0"
   )
     .then((res) => res.json())
     .then((data) => data);
@@ -69,6 +69,8 @@ export const getStaticProps = async ({
 const ProductDetailsPage = ({
   product,
 }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { back } = useRouter();
+
   if (!product) {
     return <p>Product not found 😥</p>;
   }
@@ -95,9 +97,9 @@ const ProductDetailsPage = ({
       />
       <div className='w-full md:w-2/3 lg:w-2/5 mx-auto h-max'>
         <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-5'>
-          <Link href='/products'>
+          <div onClick={back}>
             <a>Go back</a>
-          </Link>
+          </div>
         </button>
         <FullProduct
           data={{
