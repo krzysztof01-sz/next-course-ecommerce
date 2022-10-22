@@ -6,7 +6,7 @@ interface PageProps {
 
 const Page = ({ number }: PageProps) => {
   return (
-    <Link href={`/products?page=${number}`} passHref>
+    <Link href={`/products/page/${number}`} passHref>
       <a className='border-transparent text-gray-100 hover:text-gray-400 hover:border-gray-300 border-t-2 pt-4 px-4 inline-flex items-center text-sm font-medium'>
         {number}
       </a>

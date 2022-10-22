@@ -26,7 +26,9 @@ export const Header = () => {
           </li>
           <li
             className={`${
-              route === "/products" ? "underline font-bold mr-2" : undefined
+              route.includes("/products")
+                ? "underline font-bold mr-2"
+                : undefined
             } mr-2`}
           >
             <Link href='/products'>Products</Link>

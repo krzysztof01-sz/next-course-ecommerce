@@ -1,10 +1,8 @@
-import Link from "next/link";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
-import { useQuery } from "react-query";
+import { InferGetStaticPropsType } from "next";
 import { Main } from "../../components/Main";
+import { NoProducts } from "../../components/NoProducts";
 import { Pagination } from "../../components/Pagination";
-import { ProductLight } from "../../components/Product";
+import { ProductsList } from "../../components/ProductsList";
 
 export interface Product {
   id: number;
@@ -20,44 +18,37 @@ export interface Product {
   };
 }
 
-const ProductsPage = () => {
-  const { query } = useRouter();
-  const page = Number(query.page || 1);
-  const offset = (page - 1) * 25;
-
-  const { data: products, refetch } = useQuery<Product[]>(
-    "products",
-    async () => {
-      const response = await fetch(
-        `https://naszsklep-api.vercel.app/api/products?take=25&offset=${offset}`
-      );
-      const products = await response.json();
-      return products;
-    }
-  );
-
-  useEffect(() => {
-    refetch();
-  }, [page, refetch]);
+export const getStaticProps = async () => {
+  const products: Product[] | null = await fetch(
+    `https://naszsklep-api.vercel.app/api/products?take=25&offset=0`
+  ).then((data) => data.json());
 
   if (!products) {
-    return <div>Oops, something went wrong.</div>;
+    return {
+      props: {},
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      products,
+      page: 1,
+    },
+  };
+};
+
+const ProductsPage = ({
+  products,
+  page,
+}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  if (!products) {
+    return <NoProducts />;
   }
 
   return (
     <Main>
-      <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
-        {products.map(({ image, title, id }) => (
-          <li key={id}>
-            <Link passHref href={`/products/${id}`}>
-              <a>
-                <ProductLight image={image} title={title} />
-              </a>
-            </Link>
-          </li>
-        ))}
-      </ul>
-
+      <ProductsList products={products} />
       <Pagination page={page} />
     </Main>
   );
