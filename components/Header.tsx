@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { CartIcon } from "../icons/Cart";
 
 export const Header = () => {
   const { route } = useRouter();
@@ -7,8 +8,6 @@ export const Header = () => {
   return (
     <header className='mx-auto w-full'>
       <nav className='text-white bg-gray-800 px-6 py-4'>
-        <p>Navigation</p>
-
         <ul className='flex'>
           <li
             className={`${
@@ -32,6 +31,14 @@ export const Header = () => {
             } mr-2`}
           >
             <Link href='/products'>Products</Link>
+          </li>
+
+          <li className='ml-auto'>
+            <Link href='/cart' passHref>
+              <a>
+                <CartIcon />
+              </a>
+            </Link>
           </li>
         </ul>
       </nav>

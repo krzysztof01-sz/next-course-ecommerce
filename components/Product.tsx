@@ -1,4 +1,6 @@
 import Image from "next/image";
+import Link from "next/link";
+import { useCartContext } from "../hooks/useCartContext";
 import { MarkdownResult } from "../types";
 import { CustomMarkdown } from "./CustomMarkdown";
 
@@ -14,24 +16,40 @@ interface FullProductProps {
   data: ProductDetailsProps;
 }
 
-type ProductBase = Pick<ProductDetailsProps, "title" | "image">;
+type ProductBase = Pick<ProductDetailsProps, "title" | "image"> & {
+  id: number;
+};
 
-export const ProductLight = ({ image, title }: ProductBase) => {
+export const ProductLight = ({ image, title, id }: ProductBase) => {
+  const { addProduct } = useCartContext();
+
   return (
     <div className='rounded-2xl bg-gradient-to-r from-pink-500 via-red-500 to-white p-1 shadow-xl'>
       <div className='block relative h-full rounded-xl bg-gray-800 p-6 sm:p-8'>
         <div className='mt-5'>
-          <div className='p-3 bg-white'>
-            <Image
-              width={16}
-              height={9}
-              layout='responsive'
-              objectFit='contain'
-              alt={title}
-              src={image}
-            />
-          </div>
-          <h5 className='text-xl mt-5 font-bold text-white'>{title}</h5>
+          <Link passHref href={`/products/${id}`}>
+            <a>
+              <div className='p-3 bg-white'>
+                <Image
+                  width={16}
+                  height={9}
+                  layout='responsive'
+                  objectFit='contain'
+                  alt={title}
+                  src={image}
+                />
+              </div>
+              <h5 className='text-xl mt-5 font-bold text-white'>{title}</h5>
+            </a>
+          </Link>
+
+          <button
+            onClick={() => addProduct({ title, price: 10, id })}
+            type='button'
+            className='mt-4 text-white bg-pink-500 hover:bg-pink-400 focus:ring-4 focus:outline-none focus:ring-pink-100 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center mr-2'
+          >
+            Dodaj do koszyka
+          </button>
         </div>
       </div>
     </div>
@@ -60,7 +78,7 @@ export const FullProduct = ({ data }: FullProductProps) => {
           <p className='mt-2 text-sm text-gray-400'>{data.description}</p>
           {data.longDescription && (
             <div className='mt-6'>
-              <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-blue-500'>
+              <article className='prose prose-h2:text-gray-200 prose-h2:text-lg prose-h3:text-gray-200 prose-h3:text-lg prose-a:text-white'>
                 <CustomMarkdown>{data.longDescription}</CustomMarkdown>
               </article>
             </div>
