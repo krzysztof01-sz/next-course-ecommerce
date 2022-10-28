@@ -11,11 +11,7 @@ export const ProductsList = ({ products }: ProductsListProps) => {
     <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
       {products.map(({ image, title, id }) => (
         <li key={id}>
-          <Link passHref href={`/products/${id}`}>
-            <a>
-              <ProductLight image={image} title={title} />
-            </a>
-          </Link>
+          <ProductLight id={id} image={image} title={title} />
         </li>
       ))}
     </ul>
