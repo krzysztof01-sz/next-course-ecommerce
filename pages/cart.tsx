@@ -3,7 +3,6 @@ import { useCartContext } from "../hooks/useCartContext";
 
 const CartPage = () => {
   const { products, deleteProduct } = useCartContext();
-  console.log(products);
 
   if (products.length === 0) {
     return (
