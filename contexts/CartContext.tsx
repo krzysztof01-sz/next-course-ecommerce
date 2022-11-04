@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 interface CartProduct {
   id: number;
@@ -26,7 +26,26 @@ const defaultContext: Cart = {
 export const CartContext = createContext<Cart | undefined>(undefined);
 
 export const CartContextProvider = ({ children }: CartContextProviderProps) => {
-  const [cart, setCart] = useState<Cart>(defaultContext);
+  const [cart, setCart] = useState<Cart>();
+
+  useEffect(() => {
+    const localStorageCart = localStorage.getItem("NEXT_SHOPPING_CART");
+    if (localStorageCart) {
+      const cart = JSON.parse(localStorageCart);
+      if (cart) {
+        return setCart({ ...defaultContext, products: cart });
+      }
+    }
+    return setCart(defaultContext);
+  }, []);
+
+  useEffect(() => {
+    if (cart && cart.products) {
+      localStorage.setItem("NEXT_SHOPPING_CART", JSON.stringify(cart.products));
+    }
+  }, [cart]);
+
+  if (!cart) return null;
 
   return (
     <CartContext.Provider
@@ -46,13 +65,13 @@ export const CartContextProvider = ({ children }: CartContextProviderProps) => {
             });
 
             return setCart((prevCart) => ({
-              ...prevCart,
+              ...(prevCart as Cart),
               products: newProducts,
             }));
           }
 
           return setCart((prevCart) => ({
-            ...prevCart,
+            ...(prevCart as Cart),
             products: [...cart.products, { ...product, count: 1 }],
           }));
         },
@@ -67,7 +86,7 @@ export const CartContextProvider = ({ children }: CartContextProviderProps) => {
             .filter(({ count }) => count > 0);
 
           return setCart((prevCart) => ({
-            ...prevCart,
+            ...(prevCart as Cart),
             products: newProducts,
           }));
         },
