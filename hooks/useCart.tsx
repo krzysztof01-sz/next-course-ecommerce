@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-
-interface CartProduct {
-  id: number;
-  title: string;
-  price: number;
-  count: number;
-}
+import { ProductWithCount } from "../contexts/CartContext";
+import {
+  FullProductFragment,
+  LightProductFragment,
+} from "../graphql/generated/graphql";
 
 interface Cart {
-  products: CartProduct[];
-  addProduct: (product: Omit<CartProduct, "count">) => void;
-  deleteProduct: (id: CartProduct["id"]) => void;
+  products: ProductWithCount[];
+  addProduct: (product: FullProductFragment) => void;
+  deleteProduct: (id: FullProductFragment["id"]) => void;
 }
 
 const defaultContext: Cart = {
@@ -39,7 +37,7 @@ export const useCart = (): Cart => {
     }
   }, [cart]);
 
-  const addProduct = (product: Omit<CartProduct, "count">) => {
+  const addProduct = (product: FullProductFragment) => {
     if (!cart) return defaultContext;
 
     const existingProduct = cart.products.find(
@@ -66,7 +64,7 @@ export const useCart = (): Cart => {
     }));
   };
 
-  const deleteProduct = (id: number) => {
+  const deleteProduct = (id: LightProductFragment["id"]) => {
     if (!cart) return defaultContext;
 
     const newProducts = cart.products

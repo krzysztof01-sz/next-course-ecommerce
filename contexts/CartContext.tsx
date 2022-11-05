@@ -1,28 +1,18 @@
 import { createContext, ReactNode } from "react";
+import { FullProductFragment } from "../graphql/generated/graphql";
 import { useCart } from "../hooks/useCart";
 
-interface CartProduct {
-  id: number;
-  title: string;
-  price: number;
-  count: number;
-}
+export type ProductWithCount = FullProductFragment & { count: number };
 
 export interface Cart {
-  products: CartProduct[];
-  addProduct: (product: Omit<CartProduct, "count">) => void;
-  deleteProduct: (id: CartProduct["id"]) => void;
+  products: ProductWithCount[];
+  addProduct: (product: FullProductFragment) => void;
+  deleteProduct: (id: FullProductFragment["id"]) => void;
 }
 
 interface CartContextProviderProps {
   children: ReactNode;
 }
-
-const defaultContext: Cart = {
-  products: [],
-  addProduct: () => {},
-  deleteProduct: () => [],
-};
 
 export const CartContext = createContext<Cart | undefined>(undefined);
 

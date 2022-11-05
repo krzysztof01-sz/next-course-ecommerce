@@ -2,7 +2,7 @@ import { InferGetStaticPropsType } from "next";
 import { Product } from "../";
 import { Main } from "../../../components/Main";
 import { Pagination } from "../../../components/Pagination";
-import { InferGetStaticPaths } from "../[id]";
+import { InferGetStaticPaths } from "../[slug]";
 import { NoProducts } from "../../../components/NoProducts";
 import { ProductsList } from "../../../components/ProductsList";
 

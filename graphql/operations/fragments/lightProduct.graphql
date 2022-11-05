@@ -1,0 +1,11 @@
+fragment LightProduct on Product {
+  id
+  title
+  slug
+  image {
+    id
+    width
+    height
+    url(transformation: { image: { resize: { width: 800, height: 400 } } })
+  }
+}
