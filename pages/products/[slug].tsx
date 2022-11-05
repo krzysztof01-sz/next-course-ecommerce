@@ -1,10 +1,12 @@
 import { InferGetStaticPropsType } from "next";
-import { Product } from ".";
 import { Main } from "../../components/Main";
 import { FullProduct } from "../../components/Product";
 import { NextSeo } from "next-seo";
 import { serialize } from "next-mdx-remote/serialize";
 import { useRouter } from "next/router";
+import { apolloClient } from "../../graphql";
+import { gql } from "@apollo/client";
+import { GetAllProductsSlugDocument } from "../../graphql/generated/graphql";
 
 export type InferGetStaticPaths<T> = T extends () => Promise<{
   paths: Array<{ params: infer R }>;
@@ -13,20 +15,18 @@ export type InferGetStaticPaths<T> = T extends () => Promise<{
   : never;
 
 export const getStaticPaths = async () => {
-  const response: Product[] = await fetch(
-    "https://naszsklep-api.vercel.app/api/products?take=250&offset=0"
-  )
-    .then((res) => res.json())
-    .then((data) => data);
+  const { data } = await apolloClient.query({
+    query: GetAllProductsSlugDocument,
+  });
 
-  const ids = response.map(({ id }) => ({
+  const slugs = data.products.map(({ slug }) => ({
     params: {
-      id: String(id),
+      slug,
     },
   }));
 
   return {
-    paths: ids,
+    paths: slugs,
     fallback: false,
   };
 };
@@ -34,20 +34,41 @@ export const getStaticPaths = async () => {
 export const getStaticProps = async ({
   params,
 }: InferGetStaticPaths<typeof getStaticPaths>) => {
-  if (!params?.id) {
+  if (!params?.slug) {
     return {
       props: {},
       notFound: true,
     };
   }
 
-  const response: Product | null = await fetch(
-    `https://naszsklep-api.vercel.app/api/products/${params.id}`
-  )
-    .then((res) => res.json())
-    .then((data) => data);
+  const { data, error } = await apolloClient.query({
+    query: gql`
+      query GetProductDetails($slug: String!) {
+        product(where: { slug: $slug }) {
+          id
+          title
+          slug
+          description
+          longDescription
+          rating
+          price
+          image {
+            id
+            width
+            height
+            url(
+              transformation: { image: { resize: { width: 800, height: 400 } } }
+            )
+          }
+        }
+      }
+    `,
+    variables: {
+      slug: params.slug,
+    },
+  });
 
-  if (!response) {
+  if (error) {
     return {
       props: {},
       notFound: true,
@@ -57,9 +78,9 @@ export const getStaticProps = async ({
   return {
     props: {
       product: {
-        ...response,
-        longDescription: response.longDescription
-          ? await serialize(response.longDescription)
+        ...data.product,
+        longDescription: data.product.longDescription
+          ? await serialize(data.product.longDescription)
           : undefined,
       },
     },
@@ -101,15 +122,7 @@ const ProductDetailsPage = ({
             <a>Go back</a>
           </div>
         </button>
-        <FullProduct
-          data={{
-            description: product.description,
-            image: product.image,
-            rating: product.rating.rate,
-            title: product.title,
-            longDescription: product.longDescription,
-          }}
-        />
+        <FullProduct data={product} />
       </div>
     </Main>
   );

@@ -1,29 +1,19 @@
-import { InferGetStaticPropsType } from "next";
 import { Main } from "../../components/Main";
 import { NoProducts } from "../../components/NoProducts";
 import { Pagination } from "../../components/Pagination";
 import { ProductsList } from "../../components/ProductsList";
-
-export interface Product {
-  id: number;
-  title: string;
-  price: number;
-  description: string;
-  category: string;
-  image: string;
-  longDescription?: string;
-  rating: {
-    rate: number;
-    count: number;
-  };
-}
+import { apolloClient } from "../../graphql";
+import {
+  GetAllProductsDocument,
+  LightProductFragment,
+} from "../../graphql/generated/graphql";
 
 export const getStaticProps = async () => {
-  const products: Product[] | null = await fetch(
-    `https://naszsklep-api.vercel.app/api/products?take=25&offset=0`
-  ).then((data) => data.json());
+  const { data, error } = await apolloClient.query({
+    query: GetAllProductsDocument,
+  });
 
-  if (!products) {
+  if (error || !data) {
     return {
       props: {},
       notFound: true,
@@ -32,16 +22,18 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      products,
+      products: data.products,
       page: 1,
     },
   };
 };
 
-const ProductsPage = ({
-  products,
-  page,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+interface ProductsPageProps {
+  products: LightProductFragment[];
+  page: number;
+}
+
+const ProductsPage = ({ products, page }: ProductsPageProps) => {
   if (!products) {
     return <NoProducts />;
   }
@@ -49,7 +41,7 @@ const ProductsPage = ({
   return (
     <Main>
       <ProductsList products={products} />
-      <Pagination page={page} />
+      <Pagination page={Number(page)} />
     </Main>
   );
 };

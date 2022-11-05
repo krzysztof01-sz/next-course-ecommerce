@@ -1,0 +1,15 @@
+query GetHomepageProducts {
+  products(first: 2) {
+    id
+    title
+    slug
+    rating
+    description
+    image {
+      id
+      width
+      height
+      url(transformation: { image: { resize: { width: 800, height: 400 } } })
+    }
+  }
+}

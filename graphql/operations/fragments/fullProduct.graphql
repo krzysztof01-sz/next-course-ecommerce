@@ -1,0 +1,15 @@
+fragment FullProduct on Product {
+  id
+  title
+  slug
+  description
+  longDescription
+  rating
+  price
+  image {
+    id
+    width
+    height
+    url(transformation: { image: { resize: { width: 800, height: 400 } } })
+  }
+}
