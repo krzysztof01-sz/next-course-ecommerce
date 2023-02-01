@@ -33,11 +33,20 @@ const PagesSeparator = () => {
   );
 };
 
-export const Pagination = ({ page }: { page: number }) => {
+interface PaginationProps {
+  page: number;
+  itemsCount: number;
+}
+
+export const Pagination = ({ page, itemsCount }: PaginationProps) => {
+  if (itemsCount <= 1) return null;
+
+  const pages = Math.ceil(itemsCount / 3);
+
   return (
     <nav className='border-t border-gray-100 px-4 flex items-center justify-between sm:px-0'>
       <div className='hidden md:-mt-px md:flex'>
-        {[...new Array(10)].map((_, index) => {
+        {[...new Array(pages)].map((_, index) => {
           const pageIndex = index + 1;
           if (pageIndex === page) {
             return <ActivePage key={pageIndex} number={pageIndex} />;

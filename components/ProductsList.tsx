@@ -8,9 +8,9 @@ interface ProductsListProps {
 export const ProductsList = ({ products }: ProductsListProps) => {
   return (
     <ul className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
-      {products.map(({ image, title, id, slug }) => (
-        <li key={id}>
-          <ProductLight id={id} image={image} title={title} slug={slug} />
+      {products.map((product) => (
+        <li key={product.id}>
+          <ProductLight product={product} />
         </li>
       ))}
     </ul>

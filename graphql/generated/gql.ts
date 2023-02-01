@@ -9,6 +9,7 @@ const documents = {
     "query GetAllProductsSlug {\n  products {\n    slug\n  }\n}": types.GetAllProductsSlugDocument,
     "query GetHomepageProducts {\n  products(first: 2) {\n    id\n    title\n    slug\n    rating\n    description\n    image {\n      id\n      width\n      height\n      url(transformation: {image: {resize: {width: 800, height: 400}}})\n    }\n  }\n}": types.GetHomepageProductsDocument,
     "query GetProductDetails($slug: String!) {\n  product(where: {slug: $slug}) {\n    ...FullProduct\n  }\n}": types.GetProductDetailsDocument,
+    "query GetPageProducts($first: Int!, $skip: Int!) {\n  productsConnection(first: $first, skip: $skip) {\n    edges {\n      node {\n        ...LightProduct\n      }\n    }\n    aggregate {\n      count\n    }\n  }\n}": types.GetPageProductsDocument,
 };
 
 export function graphql(source: "fragment FullProduct on Product {\n  id\n  title\n  slug\n  description\n  longDescription\n  rating\n  price\n  image {\n    id\n    width\n    height\n    url(transformation: {image: {resize: {width: 800, height: 400}}})\n  }\n}"): (typeof documents)["fragment FullProduct on Product {\n  id\n  title\n  slug\n  description\n  longDescription\n  rating\n  price\n  image {\n    id\n    width\n    height\n    url(transformation: {image: {resize: {width: 800, height: 400}}})\n  }\n}"];
@@ -17,6 +18,7 @@ export function graphql(source: "query GetAllProducts {\n  products {\n    ...Li
 export function graphql(source: "query GetAllProductsSlug {\n  products {\n    slug\n  }\n}"): (typeof documents)["query GetAllProductsSlug {\n  products {\n    slug\n  }\n}"];
 export function graphql(source: "query GetHomepageProducts {\n  products(first: 2) {\n    id\n    title\n    slug\n    rating\n    description\n    image {\n      id\n      width\n      height\n      url(transformation: {image: {resize: {width: 800, height: 400}}})\n    }\n  }\n}"): (typeof documents)["query GetHomepageProducts {\n  products(first: 2) {\n    id\n    title\n    slug\n    rating\n    description\n    image {\n      id\n      width\n      height\n      url(transformation: {image: {resize: {width: 800, height: 400}}})\n    }\n  }\n}"];
 export function graphql(source: "query GetProductDetails($slug: String!) {\n  product(where: {slug: $slug}) {\n    ...FullProduct\n  }\n}"): (typeof documents)["query GetProductDetails($slug: String!) {\n  product(where: {slug: $slug}) {\n    ...FullProduct\n  }\n}"];
+export function graphql(source: "query GetPageProducts($first: Int!, $skip: Int!) {\n  productsConnection(first: $first, skip: $skip) {\n    edges {\n      node {\n        ...LightProduct\n      }\n    }\n    aggregate {\n      count\n    }\n  }\n}"): (typeof documents)["query GetPageProducts($first: Int!, $skip: Int!) {\n  productsConnection(first: $first, skip: $skip) {\n    edges {\n      node {\n        ...LightProduct\n      }\n    }\n    aggregate {\n      count\n    }\n  }\n}"];
 
 export function graphql(source: string): unknown;
 export function graphql(source: string) {

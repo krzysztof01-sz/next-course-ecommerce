@@ -1,17 +1,27 @@
-import { InferGetStaticPropsType } from "next";
-import { Product } from "../";
 import { Main } from "../../../components/Main";
 import { Pagination } from "../../../components/Pagination";
 import { InferGetStaticPaths } from "../[slug]";
 import { NoProducts } from "../../../components/NoProducts";
 import { ProductsList } from "../../../components/ProductsList";
+import {
+  GetAllProductsDocument,
+  GetPageProductsDocument,
+  LightProductFragment,
+} from "../../../graphql/generated/graphql";
+import { apolloClient } from "../../../graphql";
 
 export const getStaticPaths = async () => {
-  const ids = [...new Array(10)].map((_, id) => ({
-    params: {
-      page: String(id + 1),
-    },
-  }));
+  const { data } = await apolloClient.query({
+    query: GetAllProductsDocument,
+  });
+
+  const ids = [...new Array(Math.ceil(data.products.length / 3))].map(
+    (_, id) => ({
+      params: {
+        page: String(id + 1),
+      },
+    })
+  );
 
   return {
     paths: ids,
@@ -29,16 +39,15 @@ export const getStaticProps = async ({
     };
   }
 
-  const offset = (Number(params.page) - 1) * 25;
   const { page } = params;
+  const offset = (Number(page) - 1) * 3;
 
-  const products: Product[] | null = await fetch(
-    `https://naszsklep-api.vercel.app/api/products?take=25&offset=${offset}`
-  )
-    .then((res) => res.json())
-    .then((data) => data);
+  const { data, error } = await apolloClient.query({
+    query: GetPageProductsDocument,
+    variables: { first: 3, skip: offset },
+  });
 
-  if (!products) {
+  if (!data || error) {
     return {
       props: {},
       notFound: true,
@@ -47,16 +56,24 @@ export const getStaticProps = async ({
 
   return {
     props: {
-      products,
+      products: data.productsConnection.edges.map((prod) => prod.node),
+      productsCount: data.productsConnection.aggregate.count,
       page,
     },
   };
 };
 
+interface SingleProductsPageProps {
+  products: LightProductFragment[];
+  page: number;
+  productsCount: number;
+}
+
 const SingleProductsPage = ({
   products,
   page,
-}: InferGetStaticPropsType<typeof getStaticProps>) => {
+  productsCount,
+}: SingleProductsPageProps) => {
   if (!products) {
     return <NoProducts />;
   }
@@ -64,7 +81,7 @@ const SingleProductsPage = ({
   return (
     <Main>
       <ProductsList products={products} />
-      <Pagination page={Number(page)} />
+      <Pagination itemsCount={productsCount} page={Number(page)} />
     </Main>
   );
 };

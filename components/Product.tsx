@@ -8,13 +8,13 @@ import { useCartContext } from "../hooks/useCartContext";
 import { MarkdownResult } from "../types";
 import { CustomMarkdown } from "./CustomMarkdown";
 
-export const ProductLight = ({
-  id,
-  title,
-  slug,
-  image,
-}: LightProductFragment) => {
+interface ProductLightProps {
+  product: LightProductFragment;
+}
+
+export const ProductLight = ({ product }: ProductLightProps) => {
   const { addProduct } = useCartContext();
+  const { id, title, slug, image } = product;
 
   return (
     <div className='rounded-2xl bg-gradient-to-r from-pink-500 via-red-500 to-white p-1 shadow-xl'>
