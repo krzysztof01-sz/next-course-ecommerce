@@ -1,0 +1,12 @@
+query GetPageProducts($first: Int!, $skip: Int!) {
+  productsConnection(first: $first, skip: $skip) {
+    edges {
+      node {
+        ...LightProduct
+      }
+    }
+    aggregate {
+      count
+    }
+  }
+}

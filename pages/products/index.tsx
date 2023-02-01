@@ -4,16 +4,17 @@ import { Pagination } from "../../components/Pagination";
 import { ProductsList } from "../../components/ProductsList";
 import { apolloClient } from "../../graphql";
 import {
-  GetAllProductsDocument,
+  GetPageProductsDocument,
   LightProductFragment,
 } from "../../graphql/generated/graphql";
 
 export const getStaticProps = async () => {
   const { data, error } = await apolloClient.query({
-    query: GetAllProductsDocument,
+    query: GetPageProductsDocument,
+    variables: { first: 3, skip: 0 },
   });
 
-  if (error || !data) {
+  if (!data || error) {
     return {
       props: {},
       notFound: true,
@@ -22,7 +23,8 @@ export const getStaticProps = async () => {
 
   return {
     props: {
-      products: data.products,
+      products: data.productsConnection.edges.map((prod) => prod.node),
+      productsCount: data.productsConnection.aggregate.count,
       page: 1,
     },
   };
@@ -31,9 +33,10 @@ export const getStaticProps = async () => {
 interface ProductsPageProps {
   products: LightProductFragment[];
   page: number;
+  productsCount: number;
 }
 
-const ProductsPage = ({ products, page }: ProductsPageProps) => {
+const ProductsPage = ({ products, page, productsCount }: ProductsPageProps) => {
   if (!products) {
     return <NoProducts />;
   }
@@ -41,7 +44,7 @@ const ProductsPage = ({ products, page }: ProductsPageProps) => {
   return (
     <Main>
       <ProductsList products={products} />
-      <Pagination page={Number(page)} />
+      <Pagination itemsCount={productsCount} page={Number(page)} />
     </Main>
   );
 };
