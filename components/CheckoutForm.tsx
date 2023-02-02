@@ -1,26 +1,51 @@
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 
-interface FormData {
-  email: string;
-  nameOnCard: string;
-  cardNumber: string;
-  expirationDate: string;
-  cvc: number;
-  company: string;
-  address: string;
-  apartment: string;
-  city: string;
-  stateProvince: string;
-  postalCode: string;
-  agreement: boolean;
-}
+const FIELD_REQUIRED = "Required field";
+const INVALID_PATTERN = "Invalid pattern";
+
+const schema = yup
+  .object({
+    email: yup.string().email(INVALID_PATTERN).required(FIELD_REQUIRED),
+    nameOnCard: yup.string().required(FIELD_REQUIRED),
+    cardNumber: yup
+      .string()
+      .matches(/^[0-9]{13,16}/, { message: INVALID_PATTERN })
+      .max(16)
+      .required(FIELD_REQUIRED),
+    expirationDate: yup
+      .string()
+      .matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, { message: INVALID_PATTERN })
+      .required(FIELD_REQUIRED),
+    cvc: yup
+      .string()
+      .matches(/^[0-9]{3,4}$/, { message: INVALID_PATTERN })
+      .required(FIELD_REQUIRED),
+    company: yup.string().required(FIELD_REQUIRED),
+    address: yup.string().required(FIELD_REQUIRED),
+    apartment: yup.string(),
+    city: yup.string().required(FIELD_REQUIRED),
+    stateProvince: yup.string(),
+    postalCode: yup
+      .string()
+      .matches(/^[0-9]{2}-[0-9]{3}/, { message: INVALID_PATTERN })
+      .required(FIELD_REQUIRED),
+    agreement: yup
+      .boolean()
+      .isTrue("You have to confirm the agreement")
+      .required(FIELD_REQUIRED),
+  })
+  .required();
+
+type FormData = yup.InferType<typeof schema>;
 
 export const CheckoutForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<FormData>();
+  } = useForm<FormData>({ resolver: yupResolver(schema) });
   const onSubmit = (data: FormData) => console.log(data);
 
   return (
@@ -38,11 +63,7 @@ export const CheckoutForm = () => {
             type='email'
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='john.doe@company.com'
-            {...register("email", {
-              required: "Invalid email",
-              pattern: /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/,
-              minLength: 4,
-            })}
+            {...register("email")}
           />
           <p className='text-red-400 text-sm font-bold mt-1'>
             {errors.email?.message}
@@ -59,7 +80,7 @@ export const CheckoutForm = () => {
             id='nameOnCard'
             type='text'
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-            {...register("nameOnCard", { required: "Required field" })}
+            {...register("nameOnCard")}
           />
           <p className='text-red-400 text-sm font-bold mt-1'>
             {errors.nameOnCard?.message}
@@ -78,11 +99,7 @@ export const CheckoutForm = () => {
             inputMode='numeric'
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder='XXXX XXXX XXXX XXXX'
-            {...register("cardNumber", {
-              required: "Invalid value (format: XXXX XXXX XXXX XXXX",
-              maxLength: 16,
-              pattern: /^[0-9]{13,16}/,
-            })}
+            {...register("cardNumber")}
           />
           <p className='text-red-400 text-sm font-bold mt-1'>
             {errors.cardNumber?.message}
@@ -101,10 +118,7 @@ export const CheckoutForm = () => {
               id='expirationDate'
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
               placeholder='Expiration date (MM/YY)'
-              {...register("expirationDate", {
-                required: "Invalid pattern",
-                pattern: /^(0[1-9]|1[0-2])\/?([0-9]{2})$/,
-              })}
+              {...register("expirationDate")}
             />
             <p className='text-red-400 text-sm font-bold mt-1'>
               {errors.expirationDate?.message}
@@ -122,10 +136,7 @@ export const CheckoutForm = () => {
               type='text'
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
               placeholder='123'
-              {...register("cvc", {
-                required: "Invalid pattern",
-                pattern: /^[0-9]{3,4}$/,
-              })}
+              {...register("cvc")}
             />
             <p className='text-red-400 text-sm font-bold mt-1'>
               {errors.cvc?.message}
@@ -143,9 +154,11 @@ export const CheckoutForm = () => {
             type='text'
             id='company'
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-            placeholder='Your company'
             {...register("company")}
           />
+          <p className='text-red-400 text-sm font-bold mt-1'>
+            {errors.company?.message}
+          </p>
         </div>
         <div>
           <label
@@ -159,7 +172,7 @@ export const CheckoutForm = () => {
             id='address'
             className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
             placeholder=''
-            {...register("address", { required: "Required field" })}
+            {...register("address")}
           />
           <p className='text-red-400 text-sm font-bold mt-1'>
             {errors.address?.message}
@@ -192,7 +205,7 @@ export const CheckoutForm = () => {
               type='text'
               id='city'
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
-              {...register("city", { required: "Required field" })}
+              {...register("city")}
             />
             <p className='text-red-400 text-sm font-bold mt-1'>
               {errors.city?.message}
@@ -225,10 +238,7 @@ export const CheckoutForm = () => {
               id='postalCode'
               className='bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500'
               placeholder='XX-XXX'
-              {...register("postalCode", {
-                required: "Invalid pattern",
-                pattern: /^[0-9]{2}-[0-9]{3}/,
-              })}
+              {...register("postalCode")}
             />
             <p className='text-red-400 text-sm font-bold mt-1'>
               {errors.postalCode?.message}
@@ -243,9 +253,7 @@ export const CheckoutForm = () => {
             type='checkbox'
             value=''
             className='w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-600 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800'
-            {...register("agreement", {
-              required: "The agreement is required",
-            })}
+            {...register("agreement")}
           />
         </div>
         <label
