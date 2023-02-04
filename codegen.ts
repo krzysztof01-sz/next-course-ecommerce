@@ -8,7 +8,7 @@ const config: CodegenConfig = {
   generates: {
     "./graphql/generated/": {
       preset: "client",
-      plugins: ["typescript", "typescript-operations"],
+      plugins: [],
       config: {
         mergeFragmentTypes: true,
         flattenGeneratedTypes: true,

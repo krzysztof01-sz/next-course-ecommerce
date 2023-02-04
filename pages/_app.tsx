@@ -1,5 +1,6 @@
 import "../styles/globals.css";
 import type { AppProps } from "next/app";
+import { appWithTranslation } from "next-i18next";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { Layout } from "../components/Layout";
 import seo from "../next-seo.config";
@@ -25,4 +26,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default appWithTranslation(MyApp);
