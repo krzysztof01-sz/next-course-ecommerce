@@ -81,6 +81,10 @@ const CartPage = () => {
           })}
         </tbody>
       </table>
+
+      <a className='text-white underline font-bold text-lg mt-4 block'>
+        <Link href='/checkout'>Go to checkout page</Link>
+      </a>
     </>
   );
 };
