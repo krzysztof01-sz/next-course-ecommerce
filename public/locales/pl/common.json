@@ -1,0 +1,15 @@
+{
+  "email_address": "Adres email",
+  "name_on_card": "Imię i nazwisko na karcie",
+  "card_number": "Numer karty",
+  "expiration_date": "Data wygaśnięcia",
+  "cvc": "CVC",
+  "company": "Firma",
+  "address": "Adres",
+  "apartment": "Mieszkanie",
+  "city": "Miasto",
+  "state_province": "Stan/województwo",
+  "postal_code": "Kod pocztowy",
+  "billing_information": "Dane do rachunku takie same jak dane dostawy",
+  "submit": "Wyślij"
+}
