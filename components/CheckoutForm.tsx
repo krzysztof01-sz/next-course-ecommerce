@@ -4,34 +4,49 @@ import * as yup from "yup";
 import { Input } from "./Input";
 import { Checkbox } from "./Checkbox";
 import { useAppTranslations } from "../hooks/useAppTranslations";
+import { useCart } from "../hooks/useCart";
+import { apolloClient } from "../graphql";
+import { CreateOrderDocument } from "../graphql/generated/graphql";
+import { useState } from "react";
+import {
+  deleteEmptyValuesFromObject,
+  getTotalPrice,
+} from "../helpers/functions";
+import { OrderAlert } from "./OrderAlert";
 
 const getYupSchema = (t: Translations) => {
+  // to uncomment after homework commit
   return yup
     .object({
-      email: yup.string().email(t.INVALID_PATTERN).required(t.FIELD_REQUIRED),
-      nameOnCard: yup.string().required(t.FIELD_REQUIRED),
-      cardNumber: yup
+      email: yup
         .string()
-        .matches(/^[0-9]{13,16}/, { message: t.INVALID_PATTERN })
-        .max(16)
+        .trim()
+        .email(t.INVALID_PATTERN)
         .required(t.FIELD_REQUIRED),
-      expirationDate: yup
-        .string()
-        .matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, {
-          message: t.INVALID_PATTERN,
-        })
-        .required(t.FIELD_REQUIRED),
+      nameOnCard: yup.string().trim().required(t.FIELD_REQUIRED),
+      cardNumber: yup.string().trim().max(16).optional(),
+      // .matches(/^[0-9]{13,16}/, { message: t.INVALID_PATTERN })
+      // .required(t.FIELD_REQUIRED),
+      expirationDate: yup.string().trim().optional(),
+      // .matches(/^(0[1-9]|1[0-2])\/?([0-9]{2})$/, {
+      //   message: t.INVALID_PATTERN,
+      // })
+      // .required(t.FIELD_REQUIRED),
       cvc: yup
         .string()
-        .matches(/^[0-9]{3,4}$/, { message: t.INVALID_PATTERN })
-        .required(t.FIELD_REQUIRED),
-      company: yup.string().required(t.FIELD_REQUIRED),
-      address: yup.string().required(t.FIELD_REQUIRED),
-      apartment: yup.string(),
-      city: yup.string().required(t.FIELD_REQUIRED),
-      stateProvince: yup.string(),
+        .trim()
+        // .matches(/^[0-9]{3,4}$/, { message: t.INVALID_PATTERN })
+        .optional(),
+      // .required(t.FIELD_REQUIRED),
+      company: yup.string().trim().optional(),
+      // .required(t.FIELD_REQUIRED),
+      address: yup.string().trim().required(t.FIELD_REQUIRED),
+      apartment: yup.string().trim().optional(),
+      city: yup.string().trim().required(t.FIELD_REQUIRED),
+      stateProvince: yup.string().trim().optional(),
       postalCode: yup
         .string()
+        .trim()
         .matches(/^[0-9]{2}-[0-9]{3}/, { message: t.INVALID_PATTERN })
         .required(t.FIELD_REQUIRED),
       agreement: yup
@@ -54,7 +69,37 @@ export const CheckoutForm = () => {
     handleSubmit,
     formState: { errors },
   } = useForm<CheckoutFormData>({ resolver: yupResolver(schema) });
-  const onSubmit = (data: CheckoutFormData) => console.log(data);
+  const { products } = useCart();
+  const [isError, setIsError] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const onSubmit = async (data: CheckoutFormData) => {
+    setIsError(false);
+    setIsSuccess(false);
+
+    const formDataToSend = deleteEmptyValuesFromObject(data);
+    const totalPrice = getTotalPrice(products);
+
+    const { data: response, errors } = await apolloClient.mutate({
+      mutation: CreateOrderDocument,
+      variables: {
+        order: {
+          ...formDataToSend,
+          totalPrice,
+          products: {
+            connect: products.map((product) => ({ id: product.id })),
+          },
+        },
+      },
+    });
+
+    if (errors?.length) {
+      return setIsError(true);
+    }
+    if (response?.createOrder) {
+      return setIsSuccess(true);
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className='w-1/2'>
@@ -166,12 +211,20 @@ export const CheckoutForm = () => {
         error={errors.agreement?.message}
         register={register}
       />
-      <button
-        type='submit'
-        className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-5'
-      >
-        {t.SUBMIT}
-      </button>
+
+      {isError && (
+        <OrderAlert text='Wystąpił błąd, spróbuj ponownie' variant='error' />
+      )}
+      {isSuccess ? (
+        <OrderAlert text='Zamówienie zostało wysłane' variant='success' />
+      ) : (
+        <button
+          type='submit'
+          className='text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-full sm:w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 mt-5'
+        >
+          {t.SUBMIT}
+        </button>
+      )}
     </form>
   );
 };
