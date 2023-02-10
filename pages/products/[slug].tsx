@@ -8,7 +8,13 @@ import {
   FullProductFragment,
   GetAllProductsSlugDocument,
   GetProductDetailsDocument,
+  GetProductReviewsDocument,
+  Review,
 } from "../../graphql/generated/graphql";
+import { ProductReviewForm } from "../../components/ProductReviewForm";
+import { ProductReview } from "../../components/ProductReview";
+import { useEffect, useState } from "react";
+import { NoProducts } from "../../components/NoProducts";
 
 export type InferGetStaticPaths<T> = T extends () => Promise<{
   paths: Array<{ params: infer R }>;
@@ -75,12 +81,38 @@ interface ProductDetailsPageProps {
   product: FullProductFragment;
 }
 
-const ProductDetailsPage = ({ product }: ProductDetailsPageProps) => {
-  const { back } = useRouter();
+export type ProductReview = Pick<
+  Review,
+  "id" | "title" | "content" | "rating" | "__typename"
+>;
 
-  if (!product) {
-    return <p>Product not found 😥</p>;
-  }
+const ProductDetailsPage = ({ product }: ProductDetailsPageProps) => {
+  const { back, query } = useRouter();
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+
+  useEffect(() => {
+    apolloClient.refetchQueries({ include: ["GetProductReviews"] });
+  }, [reviews]);
+
+  useEffect(() => {
+    const getProductReviews = async () => {
+      const { data, error } = await apolloClient.query({
+        query: GetProductReviewsDocument,
+        variables: { slug: query.slug as string },
+        fetchPolicy: "no-cache",
+      });
+
+      if (data.product?.reviews) {
+        return setReviews(data.product.reviews);
+      }
+      if (error) {
+        return [];
+      }
+    };
+    getProductReviews();
+  }, [query.slug]);
+
+  if (!product) return <NoProducts />;
 
   return (
     <Main>
@@ -102,13 +134,29 @@ const ProductDetailsPage = ({ product }: ProductDetailsPageProps) => {
           site_name: "My e-commerce next app",
         }}
       />
-      <div className='w-full md:w-2/3 lg:w-2/5 mx-auto h-max'>
+      <div>
         <button className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-5'>
           <div onClick={back}>
             <a>Go back</a>
           </div>
         </button>
-        <FullProduct data={product} />
+      </div>
+      <div className='flex flex-col lg:flex-row w-full md:w-2/3 lg:w-full mx-auto h-max'>
+        <div className='md:w-full lg:1/2'>
+          <FullProduct data={product} />
+        </div>
+        <div className='mt-6 lg:mt-0 lg:ml-5 md:w-full lg:1/2'>
+          <ProductReviewForm reviews={reviews} setReviews={setReviews} />
+          <ul>
+            {reviews.map((review) => {
+              return (
+                <li className='mt-4' key={review.id}>
+                  <ProductReview review={review} key={review.id} />
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
     </Main>
   );
