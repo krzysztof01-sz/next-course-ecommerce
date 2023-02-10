@@ -1,0 +1,10 @@
+query GetProductReviews($slug: String!) {
+  product(where: { slug: $slug }) {
+    reviews(orderBy: createdAt_DESC) {
+      id
+      title
+      content
+      rating
+    }
+  }
+}
