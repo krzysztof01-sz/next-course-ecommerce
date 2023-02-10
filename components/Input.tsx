@@ -1,24 +1,23 @@
 import { HTMLAttributes, HTMLInputTypeAttribute } from "react";
-import { UseFormRegister } from "react-hook-form";
-import { CheckoutFormData } from "./CheckoutForm";
+import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
-export interface InputProps {
-  labelFor: keyof CheckoutFormData;
+export interface InputProps<T extends FieldValues> {
+  labelFor: Path<T>;
   labelText: string;
   error: string | undefined;
   inputType?: HTMLInputTypeAttribute;
   placeholder?: HTMLAttributes<HTMLInputElement>["placeholder"];
-  register: UseFormRegister<CheckoutFormData>;
+  register: UseFormRegister<T>;
 }
 
-export const Input = ({
+export const Input = <T extends FieldValues>({
   labelFor,
   labelText,
   inputType,
   error,
   placeholder,
   register,
-}: InputProps) => {
+}: InputProps<T>) => {
   return (
     <>
       <label

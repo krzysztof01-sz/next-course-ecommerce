@@ -1,3 +1,4 @@
+import { CheckoutFormData } from "./CheckoutForm";
 import { InputProps } from "./Input";
 
 export const Checkbox = ({
@@ -5,7 +6,7 @@ export const Checkbox = ({
   error,
   labelText,
   register,
-}: Omit<InputProps, "inputType" | "placeholder">) => {
+}: Omit<InputProps<CheckoutFormData>, "inputType" | "placeholder">) => {
   return (
     <>
       <div className='flex items-start'>
