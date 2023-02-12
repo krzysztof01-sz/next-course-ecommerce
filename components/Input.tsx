@@ -3,7 +3,7 @@ import { FieldValues, Path, UseFormRegister } from "react-hook-form";
 
 export interface InputProps<T extends FieldValues> {
   labelFor: Path<T>;
-  labelText: string;
+  labelText?: string;
   error: string | undefined;
   inputType?: HTMLInputTypeAttribute;
   placeholder?: HTMLAttributes<HTMLInputElement>["placeholder"];
@@ -20,12 +20,14 @@ export const Input = <T extends FieldValues>({
 }: InputProps<T>) => {
   return (
     <>
-      <label
-        htmlFor={labelFor}
-        className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
-      >
-        {labelText}
-      </label>
+      {labelText && (
+        <label
+          htmlFor={labelFor}
+          className='block mb-2 text-sm font-medium text-gray-900 dark:text-white'
+        >
+          {labelText}
+        </label>
+      )}
       <input
         id={labelFor}
         type={inputType || "text"}
