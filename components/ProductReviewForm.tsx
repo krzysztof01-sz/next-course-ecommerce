@@ -10,7 +10,7 @@ import {
 } from "../graphql/generated/graphql";
 import { ProductReview } from "../pages/products/[slug]";
 import { Input } from "./Input";
-import { OrderAlert } from "./OrderAlert";
+import { Alert } from "./Alert";
 
 const schema = yup
   .object({
@@ -115,12 +115,9 @@ export const ProductReviewForm = ({
             />
           </div>
           <div className='mt-3 flex items-center justify-between py-2 dark:border-gray-600'>
-            {error && <OrderAlert text={error} variant='error' />}
+            {error && <Alert text={error} variant='error' />}
             {isSuccess ? (
-              <OrderAlert
-                text='Opinia została dodana pomyślnie'
-                variant='success'
-              />
+              <Alert text='Opinia została dodana pomyślnie' variant='success' />
             ) : (
               <button
                 type='submit'

@@ -1,13 +1,13 @@
 import clsx from "clsx";
 
-interface OrderAlertProps {
+interface AlertProps {
   text: string;
   variant: "success" | "error";
 }
 
-export const OrderAlert = ({ text, variant }: OrderAlertProps) => {
+export const Alert = ({ text, variant }: AlertProps) => {
   return (
-    <div
+    <p
       className={clsx(
         "mt-4 p-3 w-fit rounded-md border-2 font-bold text-lg",
         variant === "success"
@@ -16,6 +16,6 @@ export const OrderAlert = ({ text, variant }: OrderAlertProps) => {
       )}
     >
       {text}
-    </div>
+    </p>
   );
 };
