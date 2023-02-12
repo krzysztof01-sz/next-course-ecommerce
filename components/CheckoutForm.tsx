@@ -12,7 +12,7 @@ import {
   deleteEmptyValuesFromObject,
   getTotalPrice,
 } from "../helpers/functions";
-import { OrderAlert } from "./OrderAlert";
+import { Alert } from "./Alert";
 
 const getYupSchema = (t: Translations) => {
   // to uncomment after homework commit
@@ -213,10 +213,10 @@ export const CheckoutForm = () => {
       />
 
       {isError && (
-        <OrderAlert text='Wystąpił błąd, spróbuj ponownie' variant='error' />
+        <Alert text='Wystąpił błąd, spróbuj ponownie' variant='error' />
       )}
       {isSuccess ? (
-        <OrderAlert text='Zamówienie zostało wysłane' variant='success' />
+        <Alert text='Zamówienie zostało wysłane' variant='success' />
       ) : (
         <button
           type='submit'
